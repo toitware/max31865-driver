@@ -1,3 +1,13 @@
+// Copyright (C) 2021 Toitware ApS. All rights reserved.
+// Use of this source code is governed by an MIT-style license that can be found
+// in the LICENSE file.
+
+/**
+Example for MAX31865 RTD-to-Digital Converter, an SPI-connected
+digital-to-analog converter typically used for temperature measurement.  See
+https://datasheets.maximintegrated.com/en/ds/MAX31865.pdf
+*/
+
 import gpio
 import serial.protocols.spi as spi
 import max31865
