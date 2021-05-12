@@ -13,6 +13,8 @@ import serial.protocols.spi as spi
 import max31865
 
 main:
+  // Testing on hardware with a bug that requires us to hold
+  // pin 15 up.
   dummy := gpio.Pin.out 15
   dummy.set 1
 
