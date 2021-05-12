@@ -4,36 +4,31 @@
 
 /**
 Driver for MAX31865 RTD-to-Digital Converter, an SPI-connected
-digital-to-analog converter typically used for temperature measurement.  See
-https://datasheets.maximintegrated.com/en/ds/MAX31865.pdf
+  digital-to-analog converter typically used for temperature measurement.  See
+  https://datasheets.maximintegrated.com/en/ds/MAX31865.pdf
 */
 
-import serial
+import serial.protocols.spi as spi
 
 /** The Max31865 can run the SPI bus at up to 5MHz. */
 MAX_BUS_SPEED ::= 5_000_000
 
 class Driver:
-  device_        /serial.Device
-  registers_     /serial.Registers
+  device_        /spi.Device
+  registers_     /spi.Registers
   config_        /int := 0
   on_            /bool := false
   r_ref_         /float := 400.0
   zero_degree_r_ /float := 100.0
 
-  constructor .device_/serial.Device:
+  constructor .device_/spi.Device:
     registers_ = device_.registers
+    registers_.set_msb_write true
     configure
 
   set_ previous/int mask/int value/int -> int:
     assert: value & ~mask == 0
     return (previous & ~mask) | value
-
-  write_8_ register/int value/int -> none:
-    assert: 0 <= value <= 0xff
-    registers_.write_u8
-      register | REGISTER_WRITE_MODE_
-      value
 
   /**
   Configure to 2, 3, or 4-wire mode, according to the
@@ -61,16 +56,16 @@ class Driver:
     config_ = set_ config_ WIRE_CONFIGURATION_MASK_
       wires == 3 ? WIRE_CONFIGURATION_3_  : WIRE_CONFIGURATION_2_OR_4_
     if on_:
-      write_8_ CONFIG_ config_
+      registers_.write_u8 CONFIG_ config_
 
   on -> none:
     config_ = set_ config_ V_BIAS_MASK_ V_BIAS_ON_
-    write_8_ CONFIG_ config_
+    registers_.write_u8 CONFIG_ config_
     on_ = true
 
   off -> none:
     config_ = set_ config_ V_BIAS_MASK_ V_BIAS_OFF_
-    write_8_ CONFIG_ config_
+    registers_.write_u8 CONFIG_ config_
     on_ = false
 
   /**
@@ -128,7 +123,7 @@ class Driver:
     // the current status, but with the one-shot bit set.
     // The bit auto-resets after the reading.
     activate_code := set_ config_ ONE_SHOT_MASK_ ONE_SHOT_MODE_
-    write_8_ CONFIG_ activate_code
+    registers_.write_u8 CONFIG_ activate_code
     ms/int := ?
     if config_ & FILTER_MASK_ == FILTER_50_HZ_:
       ms = 63
@@ -180,7 +175,7 @@ class Driver:
 /**
 Performs Newton-Raphson solving of a formula.  If you
   want to find x, but you only have y=f(x) then this
-  uses an interative process to find x from y.  You
+  uses an iterative process to find x from y.  You
   must supply a block that calculates f(x), and a block
   that calculates the derivative, f'(x).
 */
