@@ -3,8 +3,9 @@
 // in the LICENSE file.
 
 /**
-Driver for MAX31865 RTD-to-Digital Converter, an SPI-connected
-  digital-to-analog converter typically used for temperature measurement.  See
+Driver for MAX31865 RTD-to-Digital Converter.
+This is an SPI-connected digital-to-analog converter typically used for
+  temperature measurement.  See
   https://datasheets.maximintegrated.com/en/ds/MAX31865.pdf
 */
 
@@ -62,6 +63,8 @@ class Driver:
     config_ = set_ config_ V_BIAS_MASK_ V_BIAS_ON_
     registers_.write_u8 CONFIG_ config_
     on_ = true
+    // TODO: We need to prevent temperature measurements while the circuit
+    // warms up.
 
   off -> none:
     config_ = set_ config_ V_BIAS_MASK_ V_BIAS_OFF_
