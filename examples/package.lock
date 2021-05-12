@@ -1,0 +1,5 @@
+prefixes:
+  max31865: ..
+packages:
+  ..:
+    path: ..
