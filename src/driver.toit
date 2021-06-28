@@ -10,6 +10,7 @@ This is an SPI-connected digital-to-analog converter typically used for
 */
 
 import serial.protocols.spi as spi
+import resistance_to_temperature show *
 
 /** The Max31865 can run the SPI bus at up to 5MHz. */
 MAX_BUS_SPEED ::= 5_000_000
@@ -80,27 +81,7 @@ class Driver:
     if not on_: throw "DEVICE_IS_OFF"
     adc_code := read
     r_rtd := (adc_code * r_ref_) / 0x8000
-    // We use the Callendar-Van Dusen equation:
-    // r_rtd / zero_degree_r_ = 1.0 + aT + bT² -100cT³ + cT⁴
-    // a, b and c are derived from the standard IEC 751 alpha above:
-    // Derivative of this function is:
-    //   a + 2bT - 300cT² + 4cT³
-    A ::= 3.9083e-3
-    B ::= -5.775e-7
-    C ::= -4.18301e-12
-    temperature := newton_raphson_ --goal=r_rtd/zero_degree_r_
-      --function=: | t |
-        1.0
-          + A * t
-          + B * t * t
-          - 100.0 * C * t * t * t
-          + C * t * t * t * t
-      --derivative=: | t |
-        A
-          + 2.0 * B * t
-          - 300.0 * C * t * t
-          + 4.0 * C * t * t * t
-    return temperature
+    return temperature_cvd_751 r_rtd zero_degree_r_
 
   /**
   Read the temperature in degrees C, assuming a linear
@@ -174,29 +155,3 @@ class Driver:
   static V_BIAS_MASK_                ::= 0b1000_0000
   static V_BIAS_ON_                  ::= 0b1000_0000
   static V_BIAS_OFF_                 ::= 0b0000_0000
-
-/**
-Performs Newton-Raphson solving of a formula.  If you
-  want to find x, but you only have y=f(x) then this
-  uses an iterative process to find x from y.  You
-  must supply a block that calculates f(x), and a block
-  that calculates the derivative, f'(x).
-*/
-// TODO: Move this to its own package.
-newton_raphson_ --initial/num=0.0 --goal/num=0.0 [--function] [--derivative]:
-  x/float := initial.to_float
-  previous := float.NAN
-  100.repeat:
-    top := (function.call x) - goal
-    if top == 0: return x
-    new_x := x - top / (derivative.call x)
-    if new_x == x: return x
-    if new_x == previous:
-      // Oscillating around an answer.  Pick the best one.
-      old_diff := (function.call x) - goal
-      new_diff := (function.call new_x) - goal
-      return old_diff.abs < new_diff.abs ? x : new_x
-    previous = x
-    x = new_x
-  throw "DID_NOT_CONVERGE"
-

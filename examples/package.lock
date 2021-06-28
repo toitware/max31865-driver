@@ -3,3 +3,13 @@ prefixes:
 packages:
   ..:
     path: ..
+    prefixes:
+      resistance_to_temperature: toit-resistance-to-temperature
+  toit-newton-raphson:
+    url: github.com/toitware/toit-newton-raphson
+    version: 1.0.0
+  toit-resistance-to-temperature:
+    url: github.com/toitware/toit-resistance-to-temperature
+    version: 1.0.0
+    prefixes:
+      newton_raphson: toit-newton-raphson
