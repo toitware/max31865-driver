@@ -1,0 +1,4 @@
+dependencies:
+  resistance_to_temperature:
+    url: github.com/toitware/toit-resistance-to-temperature
+    version: ^1.0.0
