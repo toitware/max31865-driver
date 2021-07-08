@@ -12,14 +12,17 @@ This is an SPI-connected digital-to-analog converter typically used for
 import serial.protocols.spi as spi
 import resistance_to_temperature show *
 
-/** The Max31865 can run the SPI bus at up to 5MHz. */
+/**
+The Max31865 can run the SPI bus at up to 5MHz.
+
+NOTE: The SPI device should be configured for SPI mode 1 or 3.
+*/
 MAX_BUS_SPEED ::= 5_000_000
 
 class Driver:
   device_        /spi.Device
   registers_     /spi.Registers
   config_        /int := 0
-  on_            /bool := false
   r_ref_         /float := 400.0
   zero_degree_r_ /float := 100.0
 
@@ -48,7 +51,7 @@ class Driver:
     is 0.25 times the resisitance of the reference resistor,
     or 100 ohms.
   */
-  configure --wires/int=3 --filter_hz/int=50 --reference/num=400.0 --rtd_zero/num=(reference/4.0) -> none:
+  configure --wires/int=4 --filter_hz/int=50 --reference/num=400.0 --rtd_zero/num=(reference/4.0) -> none:
     r_ref_ = reference.to_float
     zero_degree_r_ = rtd_zero.to_float
     if not 2 <= wires <= 4: throw "ILLEGAL_ARGUMENT"
@@ -57,20 +60,15 @@ class Driver:
       filter_hz == 50 ? FILTER_50_HZ_ : FILTER_60_HZ_
     config_ = set_ config_ WIRE_CONFIGURATION_MASK_
       wires == 3 ? WIRE_CONFIGURATION_3_  : WIRE_CONFIGURATION_2_OR_4_
-    if on_:
-      registers_.write_u8 CONFIG_ config_
-
-  on -> none:
-    config_ = set_ config_ V_BIAS_MASK_ V_BIAS_ON_
     registers_.write_u8 CONFIG_ config_
-    on_ = true
-    // TODO: We need to prevent temperature measurements while the circuit
+    clear_fault_
+
+  set_bias_ value/bool -> none:
+    config_ = set_ config_ V_BIAS_MASK_ (value ? V_BIAS_ON_ : V_BIAS_OFF_)
+    registers_.write_u8 CONFIG_ config_
+    // We need to prevent temperature measurements while the circuit
     // warms up.
-
-  off -> none:
-    config_ = set_ config_ V_BIAS_MASK_ V_BIAS_OFF_
-    registers_.write_u8 CONFIG_ config_
-    on_ = false
+    if value: sleep --ms=10
 
   /**
   Read the temperature, assuming an alpha of 0.00385055, corresponding
@@ -78,7 +76,6 @@ class Driver:
     Depends on an accurate calibration of the resistance at 0 degrees.
   */
   read_temperature -> float:
-    if not on_: throw "DEVICE_IS_OFF"
     adc_code := read
     r_rtd := (adc_code * r_ref_) / 0x8000
     return temperature_cvd_751 r_rtd zero_degree_r_
@@ -102,7 +99,9 @@ class Driver:
     60Hz mode, and about 63ms in 50Hz mode.
   */
   read -> int:
-    if not on_: throw "DEVICE_IS_OFF"
+    clear_fault_
+    set_bias_ true
+
     // Activation of one-shot mode is done by setting
     // the current status, but with the one-shot bit set.
     // The bit auto-resets after the reading.
@@ -114,11 +113,17 @@ class Driver:
     else:
       ms = 53
     sleep --ms=ms
-    sleep --ms=ms
     rtd := registers_.read_u16_be RTD_
+
+    set_bias_ false
+
     if rtd & 1 != 0:
       throw "HARDWARE_FAULT"
     return rtd >> 1
+
+  clear_fault_:
+    config := set_ config_ FAULT_STATUS_MASK_ FAULT_STATUS_CLEAR_
+    registers_.write_u8 CONFIG_ config & 0b1101_0011
 
   // Register numbers.
   static CONFIG_       ::= 0
