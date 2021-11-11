@@ -9,7 +9,7 @@ This is an SPI-connected digital-to-analog converter typically used for
   https://datasheets.maximintegrated.com/en/ds/MAX31865.pdf
 */
 
-import serial.protocols.spi as spi
+import spi
 import resistance_to_temperature show *
 
 /**

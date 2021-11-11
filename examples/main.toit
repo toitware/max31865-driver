@@ -9,7 +9,7 @@ Example for MAX31865 RTD-to-Digital Converter, an SPI-connected
 */
 
 import gpio
-import serial.protocols.spi as spi
+import spi
 import max31865
 
 main:
