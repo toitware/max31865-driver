@@ -75,8 +75,9 @@ class Driver:
     to the IEC 751 standard.  Uses the Callendar-Van Dusen formula.
     Depends on an accurate calibration of the resistance at 0 degrees.
   */
-  read_temperature -> float:
+  read_temperature -> float?:
     adc_code := read
+    if not adc_code: return null
     r_rtd := (adc_code * r_ref_) / 0x8000
     return temperature_cvd_751 r_rtd zero_degree_r_
 
@@ -89,8 +90,9 @@ class Driver:
     this is accurate at 0C, gives -1.74C error at -100C,
     and -1.4C error at 100C.
   */
-  read_simple_temperature -> float:
+  read_simple_temperature -> float?:
     adc_code := read
+    if not adc_code: return null
     return (adc_code / 32.0) - 256.0
 
   /**
@@ -98,7 +100,7 @@ class Driver:
     0 and 0x7fff, inclusive.  A reading takes about 53ms in
     60Hz mode, and about 63ms in 50Hz mode.
   */
-  read -> int:
+  read -> int?:
     clear_fault_
     set_bias_ true
 
@@ -118,7 +120,7 @@ class Driver:
     set_bias_ false
 
     if rtd & 1 != 0:
-      throw "HARDWARE_FAULT"
+      return null
     return rtd >> 1
 
   clear_fault_:
