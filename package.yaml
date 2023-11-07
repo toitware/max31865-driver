@@ -1,3 +1,5 @@
+name: max31865
+description: Driver for MAX31865 RTD-to-Digital Converter.
 dependencies:
   resistance_to_temperature:
     url: github.com/toitware/toit-resistance-to-temperature
