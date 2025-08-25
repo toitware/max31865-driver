@@ -1,9 +1,11 @@
 name: max31865
 description: Driver for MAX31865 RTD-to-Digital Converter.
+environment:
+  sdk: ^2.0.0-alpha.180
 dependencies:
   resistance_to_temperature:
     url: github.com/toitware/toit-resistance-to-temperature
     version: ^1.0.0
-
-environment:
-  sdk: ^2.0.0-alpha.180
+  sensors:
+    url: github.com/toitware/toit-sensors
+    version: ^1.0.0
