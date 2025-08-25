@@ -7,9 +7,13 @@ packages:
       resistance_to_temperature: toit-resistance-to-temperature
   toit-newton-raphson:
     url: github.com/toitware/toit-newton-raphson
+    name: newton_raphson
     version: 1.0.0
+    hash: 0eee3b33385c777f4677955e626dc9ac2f4345d5
   toit-resistance-to-temperature:
     url: github.com/toitware/toit-resistance-to-temperature
+    name: resistance_to_temperature
     version: 1.0.0
+    hash: 4597cc0b05a7cbfbd3ac2eee46ddf213ed5d7540
     prefixes:
       newton_raphson: toit-newton-raphson
