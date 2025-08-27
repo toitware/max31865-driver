@@ -19,15 +19,15 @@ install-from-args_ args/List:
 install-from-assets_ configuration/Map:
   clock := configuration.get "clock"
   if not clock: throw "No 'clock' found in assets."
-  if clock is not int: throw "Clock must be an integer."
+  if clock is not int: throw "The 'clock' parameter must be an integer."
   miso := configuration.get "miso"
   if not miso: throw "No 'miso' found in assets."
-  if miso is not int: throw "Miso must be an integer."
+  if miso is not int: throw "The 'miso' parameter must be an integer."
   mosi := configuration.get "mosi"
   if not mosi: throw "No 'mosi' found in assets."
-  if mosi is not int: throw "Mosi must be an integer."
+  if mosi is not int: throw "The 'mosi' parameter must be an integer."
   cs := configuration.get "cs"
-  if cs and cs is not int: throw "Cs must be an integer."
+  if cs and cs is not int: throw "The 'cs' parameter must be an integer."
   provider.install --clock=clock --miso=miso --mosi=mosi --cs=cs
 
 main args:
