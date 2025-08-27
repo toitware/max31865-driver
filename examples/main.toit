@@ -25,14 +25,14 @@ main:
 
   device := bus.device
     --cs=gpio.Pin 27
-    --frequency=max31865.MAX_BUS_SPEED/8  // Conservative bus speed choice.
+    --frequency=max31865.MAX-BUS-SPEED/8  // Conservative bus speed choice.
     --mode=1
 
   adc := max31865.Driver device
 
   10.repeat:
     print adc.read
-    print adc.read_simple_temperature
-    print adc.read_temperature
+    print adc.read-simple-temperature
+    print adc.read-temperature
 
     sleep --ms=100
