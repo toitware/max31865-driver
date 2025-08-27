@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-2020-12/schema",
+  "$id": "https://github.com/toitware/max31865-driver/service/schema.json",
+  "title": "MAX31865 Configuration",
+  "description": "Configuration for the MAX31865 temperature sensor.",
+  "type": "object",
+  "required": [
+    "clock",
+    "miso",
+    "mosi"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "clock": {
+      "type": "integer",
+      "description": "The GPIO pin number of the clock pin."
+    },
+    "miso": {
+      "type": "integer",
+      "description": "The GPIO pin number of the MISO pin of the SPI bus."
+    },
+    "mosi": {
+      "type": "integer",
+      "description": "The GPIO pin number of the MOSI pin of the SPI bus."
+    },
+    "cs": {
+      "type": "integer",
+      "description": "The GPIO pin number of the CS pin of the SPI bus."
+    }
+  }
+}

@@ -1,8 +1,12 @@
-sdk: ^2.0.0-alpha.180
+sdk: ^2.0.0-alpha.150
 prefixes:
-  resistance_to_temperature: toit-resistance-to-temperature
-  sensors: toit-sensors
+  max31865: ..
 packages:
+  ..:
+    path: ..
+    prefixes:
+      resistance_to_temperature: toit-resistance-to-temperature
+      sensors: toit-sensors
   toit-newton-raphson:
     url: github.com/toitware/toit-newton-raphson
     name: newton_raphson
