@@ -25,7 +25,7 @@ main:
 
   device := bus.device
     --cs=gpio.Pin 27
-    --frequency=max31865.MAX-BUS-SPEED/8  // Conservative bus speed choice.
+    --frequency=max31865.MAX-BUS-SPEED / 8  // Conservative bus speed choice.
     --mode=1
 
   adc := max31865.Driver device
