@@ -51,7 +51,11 @@ class Driver:
     is 0.25 times the resisitance of the reference resistor,
     or 100 ohms.
   */
-  configure --wires/int=4 --filter-hz/int=50 --reference/num=400.0 --rtd-zero/num=(reference/4.0) -> none:
+  configure -> none
+      --wires/int=4
+      --filter-hz/int=50
+      --reference/num=400.0
+      --rtd-zero/num=(reference / 4.0):
     r-ref_ = reference.to-float
     zero-degree-r_ = rtd-zero.to-float
     if not 2 <= wires <= 4: throw "ILLEGAL_ARGUMENT"
@@ -71,7 +75,9 @@ class Driver:
     if value: sleep --ms=10
 
   /**
-  Read the temperature, assuming an alpha of 0.00385055, corresponding
+  Reads the temperature.
+
+  Assumes an alpha of 0.00385055, corresponding
     to the IEC 751 standard.  Uses the Callendar-Van Dusen formula.
     Depends on an accurate calibration of the resistance at 0 degrees.
   */
@@ -82,8 +88,9 @@ class Driver:
     return temperature-cvd-751 r-rtd zero-degree-r_
 
   /**
-  Read the temperature in degrees C, assuming a linear
-    resistance-temperature relation.  Uses the approximate
+  Reads the temperature in degrees C.
+
+  Assumes a linear resistance-temperature relation.  Uses the approximate
     algorithm from the data sheet.  Does not make use of
     the configuration of the reference resistance or the
     zero degrees resistance.  According to the data sheet
@@ -96,9 +103,10 @@ class Driver:
     return (adc-code / 32.0) - 256.0
 
   /**
-  Read the ADC in one-shot mode.  Returns a value between
-    0 and 0x7fff, inclusive.  A reading takes about 53ms in
-    60Hz mode, and about 63ms in 50Hz mode.
+  Reads the ADC in one-shot mode.
+
+  Returns a value between 0 and 0x7fff, inclusive.  A reading takes about
+    53ms in 60Hz mode, and about 63ms in 50Hz mode.
   */
   read -> int?:
     clear-fault_

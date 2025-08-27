@@ -1,0 +1,3 @@
+dependencies:
+  max31865:
+    path: ..
