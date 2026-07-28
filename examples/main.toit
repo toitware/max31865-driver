@@ -19,12 +19,12 @@ main:
   dummy.set 1
 
   bus := spi.Bus
-    --mosi=gpio.Pin 13
-    --miso=gpio.Pin 12
-    --clock=gpio.Pin 14
+    --mosi=13
+    --miso=12
+    --clock=14
 
   device := bus.device
-    --cs=gpio.Pin 27
+    --cs=27
     --frequency=max31865.MAX-BUS-SPEED / 8  // Conservative bus speed choice.
     --mode=1
 
